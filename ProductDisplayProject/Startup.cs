@@ -12,9 +12,9 @@ using ProductDisplayProject.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MySql.Data.MySqlClient;
-using System.Data;
 using Microsoft.AspNetCore.Authentication.Certificate;
+using System.Data;
+using MySql.Data.MySqlClient;
 
 namespace ProductDisplayProject
 {
@@ -30,9 +30,8 @@ namespace ProductDisplayProject
         
         public void ConfigureServices(IServiceCollection services)
         {
-                services.AddAuthentication(
-            CertificateAuthenticationDefaults.AuthenticationScheme)
-            .AddCertificate();
+            services.AddAuthentication(
+            CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate();
 
             services.AddScoped<IDbConnection>((s) =>
             {
@@ -52,6 +51,8 @@ namespace ProductDisplayProject
     
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAuthentication();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
