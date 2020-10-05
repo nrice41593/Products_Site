@@ -12,6 +12,9 @@ using ProductDisplayProject.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MySql.Data.MySqlClient;
+using System.Data;
+using Microsoft.AspNetCore.Authentication.Certificate;
 
 namespace ProductDisplayProject
 {
@@ -27,9 +30,19 @@ namespace ProductDisplayProject
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                services.AddAuthentication(
+            CertificateAuthenticationDefaults.AuthenticationScheme)
+            .AddCertificate();
+
+            services.AddScoped<IDbConnection>((s) =>
+            {
+                IDbConnection conn = new MySqlConnection(Configuration.GetConnectionString("bestbuy"));
+                conn.Open();
+                return conn;
+            });
+
+            services.AddTransient<IProductRepo, ProductRepo>();
+
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
